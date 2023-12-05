@@ -1,0 +1,227 @@
+Exercise 1:
+template<class T>
+int Heap<T>::size(){
+    return count;
+}
+
+template<class T>
+bool Heap<T>::isEmpty(){
+    if(count == 0) return 1;
+    return 0;
+}
+
+template<class T>
+T Heap<T>::peek(){
+    if(count == 0) return -1;
+    return elements[0];
+}
+
+template<class T>
+bool Heap<T>::contains(T item){
+    for(int i = 0; i < count; i++) if(elements[i] == item) return 1;
+    return 0;
+}
+
+template<class T>
+bool Heap<T>::pop(){
+    if(count == 0) return 0;
+    elements[0] = elements[--count];
+    reheapDown(0);
+    return 1;
+}
+Exercise 2:
+template<class T>
+void Heap<T>::push(T item){
+    this->count++;
+    this->ensureCapacity(this->count);
+    this->elements[this->count-1] = item;
+    reheapUp(this->count-1);
+    return;
+}
+
+template<class T>
+void Heap<T>::ensureCapacity(int minCapacity){
+   if(minCapacity>this->capacity)
+   {
+       T* newelements=new T[minCapacity];
+       for(int i=0;i<this->capacity;i++){
+           newelements[i]=this->elements[i];
+       }
+       delete[] this->elements;
+       this->elements=newelements;
+       this->capacity=minCapacity;
+       return;
+   }
+}
+
+template<class T>
+void Heap<T>::reheapUp(int position){
+    if(position==0) return;
+    int i=position;
+    while(i>=0){
+        if((i-1)/2>=0 && elements[(i-1)/2]<elements[i] ){
+            swap(elements[(i-1)/2],elements[i]);
+            //reHeapUp(i);
+        }
+        i--;    
+    }
+}
+Exercise 3:
+void reheapDown(int maxHeap[], int numberOfElements, int index)
+{
+    if(index * 2 + 1 > numberOfElements) return;
+    if(index * 2 + 2 >= numberOfElements) {
+        if(maxHeap[index * 2 + 1] > maxHeap[index]) swap(maxHeap[index], maxHeap[index * 2 + 1]);
+    }
+    else {
+        int child = maxHeap[index * 2 + 1] > maxHeap[index * 2 + 2] ? index * 2 + 1 : index * 2 + 2;
+        if(maxHeap[index] < maxHeap[child]) {
+            swap(maxHeap[index], maxHeap[child]);
+            reheapDown(maxHeap, numberOfElements, child);
+        }
+    }
+}
+
+void reheapUp(int maxHeap[], int numberOfElements, int index)
+{
+    int par = (index - 1)/2;
+    while(maxHeap[index] > maxHeap[(par)]) {
+        int temp = maxHeap[index];
+        maxHeap[index] = maxHeap[par];
+        maxHeap[par] = temp;
+        index = par;
+        par = (par - 1) / 2;
+    }
+}
+Exercise 4:
+template<class T>
+int Heap<T>::getItem(T item) {
+    // TODO: return the index of item in heap
+    for(int i = 0; i < this->count ; i++){
+        if(this->elements[i] == item) return i;
+    }
+    return -1;
+}
+
+template<class T>
+void Heap<T>::remove(T item) {
+    // TODO: remove the element with value equal to item
+    if(this->count != 0){
+        int i = getItem(item);
+        if(i != -1){
+            T temp = this->elements[count-1];
+            this->elements[count-1] = this->elements[i];
+            this->elements[i] = temp;
+            this->count--;
+            reheapDown(i);
+            reheapUp(i);
+        }
+    }
+}
+template<class T>
+void Heap<T>::clear() {
+    // TODO: delete all elements in heap
+    T * newelement = new T[this->capacity];
+    this->elements = newelement;
+    this->count = 0;
+}
+Exercise 5:
+//Helping functions go here
+static void heapify(T* arr, long n, long i)
+    {
+        long largest = i;
+        long left = 2 * i + 1;
+        long right = 2 * i + 2;
+
+        if (left < n && arr[left] > arr[largest])
+            largest = left;
+
+        if (right < n && arr[right] > arr[largest])
+            largest = right;
+
+        if (largest != i) {
+            swap(arr[i], arr[largest]);
+            heapify(arr, n, largest);
+        }
+    }
+static void buildMaxHeap(T* arr, long n)
+    {
+        for (long i = n / 2 - 1; i >= 0; i--) {
+            heapify(arr, n, i);
+        }
+    }
+static void heapSort(T* start, T* end){
+    //TODO
+    long size = end - start;
+        
+        // Build max heap
+        buildMaxHeap(start, size);
+
+        // Extract elements from the heap one by one
+        for (long i = size - 1; i > 0; i--) {
+            swap(start[0], start[i]);
+            heapify(start, i, 0);
+        }
+    Sorting<T>::printArray(start,end);
+}
+Exercise 6:
+class PrinterQueue
+{
+protected:
+// your attributes
+    vector<string> vs;
+    vector<int> vi;
+    int count;
+public:
+    // your methods
+    PrinterQueue(){
+        // this->vs.resize(100);
+        // this->vi.resize(100);
+        count=0;
+    }
+    void addNewRequest(int priority, string fileName)
+    {
+        // your code here
+        if(count==0){
+            vs.push_back(fileName);
+            vi.push_back(priority);
+            count++;
+        }
+        else{
+            int idx = 0;
+            while(idx<count && vi[idx]<priority){
+                idx++;
+            }
+            vs.insert(vs.begin()+idx,fileName);
+            vi.insert(vi.begin()+idx,priority);
+            count++;
+        }
+    }
+    void print()
+    {
+        if(count!=0){
+            cout<<vs[count-1]<<endl;
+            vs.pop_back();
+            vi.pop_back();
+            count--;
+            return;
+        }
+        cout<<"No file to print"<<endl;
+        return;
+        // your code here
+        // After some logic code, you have to print fileName with endline 
+    }
+};
+Exercise 7:
+int leastAfter(vector<int>& nums, int k) {
+    // STUDENT ANSWER
+    priority_queue<int, vector<int>, greater<int>> minHeap(nums.begin(), nums.end());
+
+    for (int i = 0; i < k; ++i) {
+        int smallest = minHeap.top(); // Get the smallest element
+        minHeap.pop(); // Remove the smallest element
+        minHeap.push(smallest * 2); // Push back the smallest element multiplied by 2
+    }
+
+    return minHeap.top(); // The top of the min heap is the smallest element after k operations
+}
